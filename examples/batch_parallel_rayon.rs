@@ -8,11 +8,11 @@ fn main() {
         frame: 0,
         frame_count: 10,
     });
-    (0..10)
+    (0..32)
         .into_par_iter()
-        .map(move |idx| {
+        .map(|idx| {
             let app = app.clone();
-            let file = std::fs::File::create(format!("static/parallel/frame_{}.png", idx))?;
+            let file = std::fs::File::create(format!("static/rayon/frame_{}.png", idx))?;
             app.set_uniforms(State {
                 frame: idx,
                 frame_count: 10,
