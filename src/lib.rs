@@ -1,20 +1,13 @@
-use glam::Vec4;
-use image::{
-    DynamicImage, GenericImageView, ImageBuffer, ImageError, ImageOutputFormat, Pixel, Rgba,
-    RgbaImage,
-};
-use rayon::{
-    iter::{ParallelBridge, ParallelIterator},
-    ThreadPool, ThreadPoolBuilder,
-};
+use image::{DynamicImage, GenericImageView, ImageError, ImageOutputFormat, Rgba, RgbaImage};
+use rayon::{ThreadPool, ThreadPoolBuilder};
 use std::{
-    borrow::Cow,
     io::{self, BufWriter},
     num::NonZeroUsize,
-    os::unix::thread,
 };
 
 pub mod extract;
+pub mod prelude;
+pub mod utils;
 
 pub enum Image {
     Handle(DynamicImage),
