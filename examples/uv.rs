@@ -1,4 +1,4 @@
-use finneon::{extract::Uv, App};
+use finneon::prelude::*;
 
 fn main() {
     tracing_subscriber::fmt::init();

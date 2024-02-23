@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use image::{DynamicImage, GenericImageView};
 
 pub struct Context<'a, U> {

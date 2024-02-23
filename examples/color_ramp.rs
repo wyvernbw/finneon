@@ -1,8 +1,4 @@
-use finneon::{
-    extract::{FragColor, Uniforms, Uv},
-    App,
-};
-use glam::Vec4;
+use finneon::prelude::*;
 
 fn main() {
     tracing_subscriber::fmt::init();
