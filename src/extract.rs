@@ -1,6 +1,8 @@
+use std::sync::Arc;
+
 use image::{DynamicImage, GenericImageView};
 
-pub(crate) struct Context<'a, U> {
+pub struct Context<'a, U> {
     pub(crate) app: &'a crate::App<U>,
     pub(crate) image: &'a DynamicImage,
     pub(crate) fragcoord: glam::Vec2,
@@ -37,11 +39,16 @@ impl<'a, U> FromContext<'a, U> for Uv {
     }
 }
 
-pub struct Uniforms<'a, U>(pub &'a U);
+pub struct Uniforms<U>(pub U)
+where
+    U: Clone;
 
-impl<'a, U> FromContext<'a, U> for Uniforms<'a, U> {
+impl<'a, U> FromContext<'a, U> for Uniforms<U>
+where
+    U: Clone,
+{
     fn from_context(ctx: &'a Context<'a, U>) -> Self {
-        Uniforms(&ctx.app.uniforms)
+        Uniforms(ctx.app.uniforms.clone())
     }
 }
 
