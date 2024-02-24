@@ -1,22 +1,15 @@
 use image::{
-    DynamicImage, GenericImageView, ImageBuffer, ImageError, ImageOutputFormat, Pixel, Rgba,
-    RgbaImage,
+    DynamicImage, GenericImageView, ImageError, ImageOutputFormat, Pixel, Rgba, RgbaImage,
 };
 use rayon::{
-    iter::{
-        IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelBridge,
-        ParallelIterator,
-    },
+    iter::{IndexedParallelIterator, IntoParallelIterator, ParallelIterator},
     slice::ParallelSlice,
     ThreadPool, ThreadPoolBuilder,
 };
 use std::{
     io::{self, BufWriter},
     num::NonZeroUsize,
-    sync::{
-        mpsc::{Receiver, Sender},
-        Arc,
-    },
+    sync::{mpsc::Sender, Arc},
     thread::JoinHandle,
 };
 
@@ -41,6 +34,51 @@ impl From<&str> for Image {
 impl From<DynamicImage> for Image {
     fn from(img: DynamicImage) -> Self {
         Image::Handle(img)
+    }
+}
+
+pub struct Sampler<T: GenericImageView>(T);
+
+impl<T: GenericImageView> Sampler<T> {
+    pub fn new(image: T) -> Self {
+        Sampler(image)
+    }
+    pub fn resolution(&self) -> glam::UVec2 {
+        let res = self.0.dimensions();
+        glam::UVec2::new(res.0, res.1)
+    }
+}
+
+impl<T> Sampler<T>
+where
+    T: GenericImageView<Pixel = Rgba<u8>>,
+{
+    pub fn sample_u8(&self, uv: glam::Vec2) -> glam::Vec4 {
+        let (x, y) = (uv.x * self.0.width() as f32, uv.y * self.0.height() as f32);
+        let (x, y) = (x as u32, y as u32);
+        let pixel = self.0.get_pixel(x, y);
+        let color = pixel.to_rgba();
+        let color = color.0;
+        glam::Vec4::new(
+            color[0] as f32 / (u32::MAX as f32),
+            color[1] as f32 / (u32::MAX as f32),
+            color[2] as f32 / (u32::MAX as f32),
+            color[3] as f32 / (u32::MAX as f32),
+        )
+    }
+}
+
+impl<T> Sampler<T>
+where
+    T: GenericImageView<Pixel = Rgba<f32>>,
+{
+    pub fn sample_f32(&self, uv: glam::Vec2) -> glam::Vec4 {
+        let (x, y) = (uv.x * self.0.width() as f32, uv.y * self.0.height() as f32);
+        let (x, y) = (x as u32, y as u32);
+        let pixel = self.0.get_pixel(x, y);
+        let color = pixel.to_rgba();
+        let color = color.0;
+        glam::Vec4::new(color[0], color[1], color[2], color[3])
     }
 }
 
@@ -119,10 +157,10 @@ where
                 let fragcoord = glam::Vec2::new(x as f32, y as f32);
                 let color = color.0;
                 let color = glam::Vec4::new(
-                    color[0] as f32 / 255.0,
-                    color[1] as f32 / 255.0,
-                    color[2] as f32 / 255.0,
-                    color[3] as f32 / 255.0,
+                    color[0] as f32 / (u32::MAX as f32),
+                    color[1] as f32 / (u32::MAX as f32),
+                    color[2] as f32 / (u32::MAX as f32),
+                    color[3] as f32 / (u32::MAX as f32),
                 );
                 let ctx = extract::Context {
                     app: self,
