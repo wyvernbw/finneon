@@ -3,14 +3,14 @@ use image::{DynamicImage, GenericImageView};
 pub struct Context<'a, U> {
     pub(crate) app: &'a crate::App<U>,
     pub(crate) image: &'a DynamicImage,
-    pub(crate) fragcoord: glam::Vec2,
+    pub(crate) fragcoord: glam::UVec2,
     pub(crate) fragcolor: glam::Vec4,
 }
 trait FromContext<'a, U> {
     fn from_context(ctx: &'a Context<'a, U>) -> Self;
 }
 
-pub struct Fragcoord(pub glam::Vec2);
+pub struct Fragcoord(pub glam::UVec2);
 
 impl<'a, U> FromContext<'a, U> for Fragcoord {
     fn from_context(ctx: &'a Context<'a, U>) -> Self {
@@ -32,7 +32,8 @@ pub struct Uv(pub glam::Vec2);
 impl<'a, U> FromContext<'a, U> for Uv {
     fn from_context(ctx: &'a Context<'a, U>) -> Self {
         let Resolution(res) = Resolution::from_context(ctx);
-        let uv = ctx.fragcoord / res;
+        let fragcoord = glam::Vec2::new(ctx.fragcoord.x as f32, ctx.fragcoord.y as f32);
+        let uv = fragcoord / res;
         Uv(uv)
     }
 }

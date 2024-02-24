@@ -1,3 +1,4 @@
+use glam::uvec2;
 use image::{
     DynamicImage, GenericImageView, ImageError, ImageOutputFormat, Pixel, Rgba, RgbaImage,
 };
@@ -154,7 +155,10 @@ where
                 let color = Rgba::from_slice(bytes);
                 let x = idx % img.width() as usize;
                 let y = idx / img.width() as usize;
-                let fragcoord = glam::Vec2::new(x as f32, y as f32);
+                let (Ok(x), Ok(y)) = (x.try_into(), y.try_into()) else {
+                    panic!("Failed to convert usize to u32");
+                };
+                let fragcoord = uvec2(x, y);
                 let color = color.0;
                 let color = glam::Vec4::new(
                     color[0] as f32 / (u32::MAX as f32),
