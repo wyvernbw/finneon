@@ -1,3 +1,4 @@
+#![feature(const_trait_impl)]
 use glam::uvec2;
 use image::{
     DynamicImage, GenericImageView, ImageError, ImageOutputFormat, Pixel, Rgba, RgbaImage,
@@ -38,15 +39,34 @@ impl From<DynamicImage> for Image {
     }
 }
 
-pub struct Sampler<T: GenericImageView>(T);
+#[derive(Debug, Clone)]
+pub struct Sampler<T: GenericImageView = DynamicImage>(Arc<T>);
 
 impl<T: GenericImageView> Sampler<T> {
     pub fn new(image: T) -> Self {
-        Sampler(image)
+        Sampler(Arc::new(image))
     }
     pub fn resolution(&self) -> glam::UVec2 {
         let res = self.0.dimensions();
         glam::UVec2::new(res.0, res.1)
+    }
+}
+
+impl TryFrom<Image> for Sampler<DynamicImage> {
+    type Error = ImageError;
+    fn try_from(img: Image) -> Result<Self, Self::Error> {
+        match img {
+            Image::Handle(img) => Ok(Sampler(img.into())),
+            Image::Error(e) => Err(e),
+        }
+    }
+}
+
+impl TryFrom<&str> for Sampler<DynamicImage> {
+    type Error = ImageError;
+    fn try_from(path: &str) -> Result<Self, Self::Error> {
+        let img = image::open(path)?;
+        Ok(Sampler(img.into()))
     }
 }
 
@@ -61,10 +81,10 @@ where
         let color = pixel.to_rgba();
         let color = color.0;
         glam::Vec4::new(
-            color[0] as f32 / (u32::MAX as f32),
-            color[1] as f32 / (u32::MAX as f32),
-            color[2] as f32 / (u32::MAX as f32),
-            color[3] as f32 / (u32::MAX as f32),
+            color[0] as f32 / (u8::MAX as f32),
+            color[1] as f32 / (u8::MAX as f32),
+            color[2] as f32 / (u8::MAX as f32),
+            color[3] as f32 / (u8::MAX as f32),
         )
     }
 }
@@ -161,10 +181,10 @@ where
                 let fragcoord = uvec2(x, y);
                 let color = color.0;
                 let color = glam::Vec4::new(
-                    color[0] as f32 / (u32::MAX as f32),
-                    color[1] as f32 / (u32::MAX as f32),
-                    color[2] as f32 / (u32::MAX as f32),
-                    color[3] as f32 / (u32::MAX as f32),
+                    color[0] as f32 / (u8::MAX as f32),
+                    color[1] as f32 / (u8::MAX as f32),
+                    color[2] as f32 / (u8::MAX as f32),
+                    color[3] as f32 / (u8::MAX as f32),
                 );
                 let ctx = extract::Context {
                     app: self,
