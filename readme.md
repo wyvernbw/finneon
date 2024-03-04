@@ -5,7 +5,7 @@ Finneon is a simple rust image post processing library.
 ```rust
 #[derive(Debug, Clone)]
 struct Block {
-    texture: Sampler,
+	texture: Sampler,
 }
 
 fn fragment(
