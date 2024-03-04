@@ -144,6 +144,10 @@ where
         App { uniforms, ..self }
     }
 
+    pub fn uniforms(&self) -> &T {
+        &self.uniforms
+    }
+
     fn start_progress_thread(expected: f32) -> (Sender<()>, JoinHandle<()>) {
         let (tx, rx) = std::sync::mpsc::channel::<()>();
         let progress = std::thread::spawn(move || {
