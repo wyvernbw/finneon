@@ -5,13 +5,13 @@ Finneon is a simple rust image post processing library.
 ```rust
 #[derive(Debug, Clone)]
 struct Block {
-	texture: Sampler,
+    texture: Sampler,
 }
 
 fn fragment(
-	FragColor(color): FragColor,
-	Uv(uv): Uv,
-	Uniforms(block): Uniforms<Block>
+    FragColor(color): FragColor,
+    Uv(uv): Uv,
+    Uniforms(block): Uniforms<Block>
 ) -> Vec4 {
     let sample = block.texture.sample_u8(uv);
     sample.lerp(color, uv.y)
