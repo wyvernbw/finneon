@@ -11,6 +11,7 @@ use rayon::{
 use std::{
     io::{self, BufWriter},
     num::NonZeroUsize,
+    path::PathBuf,
     sync::{mpsc::Sender, Arc},
     thread::JoinHandle,
 };
@@ -26,6 +27,15 @@ pub enum Image {
 
 impl From<&str> for Image {
     fn from(path: &str) -> Self {
+        match image::open(path) {
+            Ok(img) => Image::Handle(img),
+            Err(e) => Image::Error(e),
+        }
+    }
+}
+
+impl From<PathBuf> for Image {
+    fn from(path: PathBuf) -> Self {
         match image::open(path) {
             Ok(img) => Image::Handle(img),
             Err(e) => Image::Error(e),
