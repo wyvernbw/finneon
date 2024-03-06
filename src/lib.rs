@@ -133,7 +133,6 @@ where
                             .unwrap_or(NonZeroUsize::new(1).unwrap())
                             .get(),
                     )
-                    .use_current_thread()
                     .build()
                     .expect("Failed to create thread pool"),
             ),
