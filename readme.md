@@ -18,7 +18,7 @@ fn fragment(
 }
 ```
 
-The api is a modern take on shader apis, using the extractor pattern. It allows for quick prototying and easy to read code.
+The api is a modern take on shader apis, using the extractor pattern. It allows for quick prototyping and easy to read code.
 
 The api is simpler than any graphics api but offers worse performance as all the work is done in parallel on the cpu.
 
