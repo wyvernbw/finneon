@@ -1,8 +1,6 @@
 #![feature(const_trait_impl)]
 use glam::uvec2;
-use image::{
-    DynamicImage, GenericImageView, ImageError, ImageOutputFormat, Pixel, Rgba, RgbaImage,
-};
+use image::{DynamicImage, GenericImageView, ImageError, ImageFormat, Pixel, Rgba, RgbaImage};
 use rayon::{
     iter::{IndexedParallelIterator, IntoParallelIterator, ParallelIterator},
     slice::ParallelSlice,
@@ -251,7 +249,7 @@ where
             result.width(),
             result.height(),
             image::ColorType::Rgba8,
-            ImageOutputFormat::Png,
+            ImageFormat::Png,
         )?;
         tracing::info!("Image written!");
         progress.join().expect("Failed to join progress thread");
